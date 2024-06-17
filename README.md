@@ -1,4 +1,4 @@
-# A Physical Model of Drosophila VFF
+# A Physical Model of Drosophila Ventral Furrow Formation
 This project simulates Drosophila Ventral Furrow Formation using Cellular Potts Model(aka Glazier-Graner-Hogeweg) framework using the [CompuCell3D(CC3D)](https://github.com/CompuCell3D/CompuCell3D) simulation software. The model investigates the role of longitudinal stiffness in the furrow formation of Drosophila melanogaster embryos during gastrulation. This simulation is part of the research presented in the paper "Embryonic cell populations display highly dynamic mechanical transitions during gastrulation" by Juan Manuel Gomez, Carlo Bevilacqua, Abhisha Thayambath, Maria Leptin, Julio M. Belmonte, and Robert Prevedel. This README file provides instructions on how to setup, run and modify this simulation using CC3D simulation environment. 
 
 ## Installing CC3D
