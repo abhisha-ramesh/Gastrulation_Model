@@ -1,0 +1,19 @@
+<!--
+Code for the physical model to asses the contribution of longitudinal stiffness
+to the furrow formation of Drosophila melanogaster embryos during gastrulation
+
+Part of the paper"
+"Embryonic cell populations display highly dynamic mechanical transitions during gastrulation"
+Juan Manuel Gomez, Carlo Bevilacqua, Abhisha Thayambath, Maria Leptin, Julio M Belmonte and Robert Prevedel
+
+
+"Code written by Abhisha Thayambath and Julio Monti Belmonte
+Department of Physics, North Carolina State University
+
+[Modified on 06/15/2024]
+-->
+
+<Simulation version="4.5.0">
+   <PythonScript Type="PythonScript">Simulation/Gastrulation_simplified.py</PythonScript>
+   <Resource Type="Python">Simulation/Gastrulation_simplifiedSteppables.py</Resource>
+</Simulation>
