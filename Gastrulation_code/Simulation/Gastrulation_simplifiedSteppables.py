@@ -338,9 +338,9 @@ class apical_constriction(SteppableBasePy):
         self.tot = 47                   #total number of cells
         
         #Parameters to generate time-varying myosin profiles(9 profiles)
-        self.width = [8.392684812435327, 6.8575263251319045, 5.875012663000353, 5.344166722429383, 5.164011399807708, 5.233569591524036, 5.451864193967082, 5.717918103525555, 5.930754216588168]
-        self.steep = [0.44488321293429717, 0.3982524926040595, 0.4047478046095632, 0.4498647719298246, 0.5190990175438597, 0.5979461644306845, 0.6719018355693154, 0.7264616539387686, 0.74712124251806]
-        self.peak_value = [0.5407899896800878, 4.267370315789474, 16.792480689370475, 36.306931859649126, 61.001534575851394, 89.0670995872033, 118.69443764293084, 148.07435949226007, 175.39767588441697]
+        self.width = [8.392684812435327, 6.8575263251319045, 5.875012663000353, 5.344166722429383, 5.164011399807708, 5.233569591524036, 5.451864193967082, 5.717918103525555, 5.930754216588168, 5.930754216588168, 5.930754216588168, 5.930754216588168, 5.930754216588168]
+        self.steep = [0.44488321293429717, 0.3982524926040595, 0.4047478046095632, 0.4498647719298246, 0.5190990175438597, 0.5979461644306845, 0.6719018355693154, 0.7264616539387686, 0.74712124251806, 0.74712124251806, 0.74712124251806, 0.74712124251806, 0.74712124251806]
+        self.peak_value = [0.5407899896800878, 4.267370315789474, 16.792480689370475, 36.306931859649126, 61.001534575851394, 89.0670995872033, 118.69443764293084, 148.07435949226007, 175.39767588441697, 175.39767588441697, 175.39767588441697, 175.39767588441697, 175.39767588441697]
         
         self.link_list_dict = {}                #initialize the dictionary to store links
         i = 0                                   #initialize link counter
@@ -356,7 +356,7 @@ class apical_constriction(SteppableBasePy):
                                 self.link_list_dict[tuple([cell.id, neighbor.id])] = i
         
     def step(self,mcs):
-        if (mcs <= 9*self.t_relax):
+        if (mcs <= 13*self.t_relax):
             index = int(mcs // self.t_relax)
             #the parameters for Myosin levels
             s = self.steep[index]
@@ -499,4 +499,57 @@ class piff_generator(SteppableBasePy):
                 self.L[cell.id].append([x,y,0])
 
 #*******************************************************************************************************#
-
+#*******************************************************************************************************#
+#CHECK FOR ARTEFACTS IN SIMULATION      
+class CheckArtefactsSteppable(SteppableBasePy):
+    def __init__(self, frequency=1):
+        SteppableBasePy.__init__(self, frequency)
+   
+    def checkApical(self,core):
+        cluster_cell_list = self.get_cluster_cells(core.clusterId)
+        for cell in cluster_cell_list:
+            if cell.type == self.APICAL:
+                return True, cell  # has apical compartment
+        print(">>>>>>>>>>>>>>>>>>> NO APICAL COMPT")
+        return False, 0     # does NOT have apical compartment
+ 
+    def scanPixels(self,cell):
+        dy=20
+        if cell.type==self.APICAL: dy=10
+        xx=[self.dim.x,0]; yy=[self.dim.y,0]
+        for x in range(int(cell.xCOM)-10,int(cell.xCOM)+10):
+            for y in range(int(cell.yCOM)-dy,int(cell.yCOM)+dy):
+                if self.cell_field[x,y,0] and self.cell_field[x,y,0].id==cell.id:
+                    xx[0]=min(xx[0],x); xx[1]=max(xx[1],x)
+                    yy[0]=min(yy[0],y); yy[1]=max(yy[1],y)
+        return xx, yy      
+ 
+    def checkFingers(self,core,apical):
+        S = 6
+        if (self.dim.x/2-18)<core.xCOM<(self.dim.x/2+18):
+            cx,cy = self.scanPixels(core)
+            ax,ay = self.scanPixels(apical)
+            if ay[1]>(cy[0]+S):
+                print(">>>>>>>>>>>>>>>>>>>>>>> FINGER DETECTED")
+                return False   # fingers detected
+        return True   # no fingers detected
+   
+    def step(self, mcs):
+        print(mcs,"> > > > > >, checking for artefacts")
+        artefact = 0
+        for core in self.cell_list_by_type(self.CORE,self.CORE_PRIME):
+            ok, apical = self.checkApical(core)
+            if ok:
+                if not self.checkFingers(core,apical):
+                    artefact = 2; break
+            else:
+                artefact = 1; break
+       
+        if artefact==1:
+            print(mcs,"STOPPING DUE TO ARTEFACT DETECTION - NO APICAL")
+            output_file, path__ = self.open_file_in_simulation_output_folder("furrow_depth_data_FAILED-APICAL.txt", mode='w')
+            self.stop_simulation()  
+        elif artefact==2:
+            print(mcs,"STOPPING DUE TO ARTEFACT DETECTION - FINGER")
+            output_file, path__ = self.open_file_in_simulation_output_folder("furrow_depth_data_FAILED-FINGER.txt", mode='w')
+            self.stop_simulation()
