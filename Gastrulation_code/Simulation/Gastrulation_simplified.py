@@ -46,39 +46,41 @@ lambda_surface_apical = 1       #strength of surface constraint for apical compa
 #
 # APICAL CONSTRICTION PARAMETERS
 lam_d = 1.0                     #minimum value of constriction force
-peak_val_multiplier = 30        #multiplier for the myosin profile
+peak_val_multiplier = 15        #multiplier for the myosin profile
 target_distance = 1.0           #target distance between neighboring apical compartments' COMs
 t_relax = 2000                  #relaxation time after each myosin profile is added
-Time = 9*t_relax                #Total time 
+Time = 13*t_relax                #Total time 
 #
 # CELL STIFFNESS PARAMETERS
 # SUB-BASAL STIFFNESS 	
 lambda_link_basal = 50          #strength of basal-core links(sub-basal stiffness)
 
-lambda_links_basal_central = [lambda_link_basal]*9      #define sub-basal stiffness for each myosin profile
-lambda_links_basal_peripheral = [lambda_link_basal]*9    
+lambda_links_basal_central = [lambda_link_basal]*13      #define sub-basal stiffness for each myosin profile
+lambda_links_basal_peripheral = [lambda_link_basal]*13    
 
 # SUB-APICAL STIFFNESS
 lambda_link_apical_peripheral = 25                    #strength of peripheral apical-core links(peripheral sub-apical stiffness)
 lambda_link_apical_central = 200                      #strength of central apical-core links(central sub-apical stiffness)
 
 #constant(not varying in time) stiffness
-#lambda_links_apical_central = [lambda_link_apical_central]*9         
-#lambda_links_apical_peripheral = [lambda_link_apical_peripheral]*9
+#lambda_links_apical_central = [lambda_link_apical_central]*13         
+#lambda_links_apical_peripheral = [lambda_link_apical_peripheral]*13
 
 #dynamic stiffness
 starting_stiffness = 30         #starting strength of apical-core links(starting sub-apical stiffness)
 
-step_peri = (lambda_link_apical_peripheral - starting_stiffness)/2.0     #define step-size for dynamic stiffness
-step_cent = (lambda_link_apical_central - starting_stiffness)/3.0
+step_peri = (lambda_link_apical_peripheral - starting_stiffness)/3.0     #define step-size for dynamic stiffness
+step_cent = (lambda_link_apical_central - starting_stiffness)/4.0
 
-lambda_links_apical_central = [starting_stiffness,starting_stiffness,starting_stiffness,starting_stiffness,
-    starting_stiffness+step_cent,starting_stiffness+step_cent,
-    starting_stiffness+(2*step_cent),starting_stiffness+(2*step_cent),lambda_link_apical_central]
+lambda_links_apical_central = [starting_stiffness,starting_stiffness,starting_stiffness+step_cent,starting_stiffness+step_cent,
+    starting_stiffness+step_cent,starting_stiffness+(2*step_cent),
+    starting_stiffness+(2*step_cent),starting_stiffness+(2*step_cent),starting_stiffness+(3*step_cent),starting_stiffness+(3*step_cent),
+    starting_stiffness+(3*step_cent),lambda_link_apical_central,lambda_link_apical_central]
     
-lambda_links_apical_peripheral = [starting_stiffness,starting_stiffness,starting_stiffness+step_peri,
+lambda_links_apical_peripheral = [starting_stiffness,starting_stiffness,starting_stiffness+step_peri,starting_stiffness+step_peri,starting_stiffness+step_peri,
+        starting_stiffness+(2*step_peri),starting_stiffness+(2*step_peri),starting_stiffness+(2*step_peri),
         lambda_link_apical_peripheral,lambda_link_apical_peripheral,lambda_link_apical_peripheral,
-        lambda_link_apical_peripheral,lambda_link_apical_peripheral,lambda_link_apical_peripheral]
+        lambda_link_apical_peripheral,lambda_link_apical_peripheral]
 
 #NUMBER OF CENTRAL CELLS
 #n_cells=4 implies (2n+1) = 9 central cells
@@ -189,5 +191,8 @@ CompuCellSetup.register_steppable(steppable=metric(10))
 
 #PIFF FILE GENERATOR
 CompuCellSetup.register_steppable(steppable=piff_generator(2000, Time))
+
+#CHECK ARTEFACTS
+CompuCellSetup.register_steppable(steppable=CheckArtefactsSteppable(1))
 
 CompuCellSetup.run()
