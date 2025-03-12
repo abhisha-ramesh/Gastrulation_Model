@@ -4,7 +4,7 @@ to the furrow formation of Drosophila melanogaster embryos during gastrulation
 
 Part of the paper"
 "Embryonic cell populations display highly dynamic mechanical transitions during gastrulation"
-Juan Manuel Gomez, Carlo Bevilacqua, Abhisha Thayambath, Maria Leptin, Julio M Belmonte and Robert Prevedel
+Juan Manuel Gomez, Carlo Bevilacqua, Abhisha Thayambath, Jean-Karim Heriche, Maria Leptin, Julio M Belmonte and Robert Prevedel
 
 
 "Code written by Abhisha Thayambath and Julio Monti Belmonte
